@@ -21,9 +21,9 @@ while True:
 
     screen.fill(black)
 
-    for event in pygame.event.get():                # позволяет закрыть окно
+    for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            exit()                              # вау
+            exit()
 
     ballrect = ballrect.move(speed)
     if ballrect.left < 0 or ballrect.right > width:
