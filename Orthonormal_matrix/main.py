@@ -3,10 +3,18 @@ import numpy as np
 
 class Matrix:
     def __init__(self, _matrix):
-        self.matrix = np.array(_matrix)
-        self.exist_flag = self.is_matrix()
-        self.square_flag = self.is_square()
-        self.orthonormal_flag = self.is_orthonormal()
+        self.eps = 0.00000001
+        try:
+            self.matrix = np.array(_matrix)
+            self.exist_flag = self.is_matrix()
+            self.square_flag = self.is_square()
+            self.orthonormal_flag = self.is_orthonormal()
+
+        except TypeError:
+            self.matrix = None
+            self.exist_flag = False
+            self.square_flag = False
+            self.orthonormal_flag = False
 
     def is_matrix(self):
         temp = len(self.matrix[0])
@@ -25,7 +33,8 @@ class Matrix:
     def is_orthonormal(self):
         if not self.square_flag or not self.exist_flag:
             return False
-        if np.all(np.eye(len(self.matrix)) == self.matrix.dot(self.matrix.T)):
+        diff = self.matrix.dot(self.matrix.T) - np.eye(len(self.matrix))
+        if np.all(diff <= self.eps):
             return True
         return False
 
