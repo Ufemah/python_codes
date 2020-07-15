@@ -3,7 +3,7 @@ import numpy as np
 
 class Matrix:
     def __init__(self, _matrix):
-        self.eps = 0.00000001
+        self.eps = 0.00000001    # accuracy
         try:
             self.matrix = np.array(_matrix)
             self.exist_flag = self.is_matrix()

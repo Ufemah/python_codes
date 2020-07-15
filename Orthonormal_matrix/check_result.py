@@ -1,6 +1,5 @@
 from Orthonormal_matrix.main import *
 import unittest
-from math import sqrt
 # numpy was imported at main file
 
 
@@ -10,6 +9,12 @@ class Check(Matrix):
         self.orthonormal_flag_check = self.is_orthonormal_check()
 
     def is_orthonormal_check(self):
+        """
+        another way to check orthonormality
+        """
+        if not self.exist_flag or not self.square_flag:
+            return False
+
         for i1 in self.matrix:
             for i2 in self.matrix:
                 if np.all(i1 == i2) and np.all((abs(i1.dot(i2)) - 1) > self.eps):
@@ -17,6 +22,7 @@ class Check(Matrix):
 
                 if np.all(i1 != i2) and np.all((abs(i1.dot(i2))) > self.eps):
                     return False
+
         return True
 
 
