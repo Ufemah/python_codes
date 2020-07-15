@@ -1,29 +1,6 @@
-from Orthonormal_matrix.main import *
+from Matrix_analysis.main import *
 import unittest
 # numpy was imported at main file
-
-
-class Check(Matrix):
-    def __init__(self, _matrix):
-        super().__init__(_matrix)
-        self.orthonormal_flag_check = self.is_orthonormal_check()
-
-    def is_orthonormal_check(self):
-        """
-        another way to check orthonormality
-        """
-        if not self.exist_flag or not self.square_flag:
-            return False
-
-        for i1 in self.matrix:
-            for i2 in self.matrix:
-                if np.all(i1 == i2) and np.all((abs(i1.dot(i2)) - 1) > self.eps):
-                    return False
-
-                if np.all(i1 != i2) and np.all((abs(i1.dot(i2))) > self.eps):
-                    return False
-
-        return True
 
 
 class TestFunction(unittest.TestCase):
@@ -87,10 +64,57 @@ class TestFunction(unittest.TestCase):
         matr = [[np.sqrt(2)/2, np.sqrt(2)/2],
                 [-np.sqrt(2)/2, np.sqrt(2)/2]]
 
-        m = Check(matr)
+        m = Matrix(matr)
         value = m.orthonormal_flag
         expected_value = m.orthonormal_flag_check
 
+        self.assertEqual(value, expected_value, 'not equal')
+
+    def test_6_equal(self):
+        """
+        check correct matrix
+        """
+        matr = np.eye(4)
+
+        m = Matrix(matr)
+        value = m.orthonormal_flag
+        expected_value = True
+
+        self.assertEqual(value, expected_value, 'not equal')
+
+    def test_7_equal(self):
+        """
+        check incorrect matrix
+        """
+        matr = np.eye(4) + 2
+
+        m = Matrix(matr)
+        value = m.orthonormal_flag
+        expected_value = False
+
+        self.assertEqual(value, expected_value, 'not equal')
+
+    def test_8_equal(self):
+        """
+        check if matrix is magic
+        """
+        matr = np.eye(5)
+
+        m = Matrix(matr)
+        value = m.magic_flag
+        expected_value = True
+        self.assertEqual(value, expected_value, 'not equal')
+
+    def test_9_equal(self):
+        """
+         check if matrix is not magic
+         """
+        matr = [[1, 1],
+                [0, 0]]
+
+        m = Matrix(matr)
+        value = m.magic_flag
+        expected_value = False
         self.assertEqual(value, expected_value, 'not equal')
 
 
