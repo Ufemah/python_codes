@@ -14,7 +14,7 @@ those repeat numbers, k. For example, there won't be input like 3a or 2[4].
 
 import re
 
-pat = r"\d+\[\w+\]"
+pat = r"(\d+)\[(\w+)\]"
 
 
 class Solution:
@@ -25,9 +25,7 @@ class Solution:
     def decode_string(self) -> str:
         elements = re.findall(pat, self.line)
         for el in elements:
-            temp = el
-            el = el[:-1:]
-            el = el.split('[')   # [k: int, encoded_string: str]
+            temp = "{k}[{string}]".format(k=el[0], string=el[1])
             self.line = self.line.replace(temp, int(el[0]) * el[1])
         if '[' in self.line:
             return self.decode_string()
