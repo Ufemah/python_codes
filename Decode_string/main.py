@@ -35,4 +35,4 @@ class Solution:
 
 if __name__ == "__main__":
     line = "3[a2[c]]"
-    print(Solution(line).decode_string())    # "aaabcbc"
+    print(Solution(line).decode_string())    # "accaccacc"
