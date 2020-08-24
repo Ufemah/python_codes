@@ -24,8 +24,13 @@ class Solution:
             self.generator(s + ')', to_open, to_close - 1)
 
     def generate_parentheses(self) -> List[str]:
+        self.res = []   # clean res before generating
         self.generator(s='', to_open=self.n, to_close=self.n)
         return self.res
 
 
 print(Solution(3).generate_parentheses())
+
+sol = Solution(4)
+print(sol.generate_parentheses())
+print(sol.generate_parentheses())
