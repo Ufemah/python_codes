@@ -22,6 +22,9 @@ class Solution:
         if self.low <= n <= self.high:
             self.res.append(n)
 
+        if n > self.high:
+            return
+
         if (n % 10) + 1 < 10:
             return self.generator(n * 10 + n % 10 + 1)
 
@@ -34,12 +37,12 @@ class Solution:
         return sorted(self.res)
 
     def brut_gen(self):
-        set = "1234567890"
+        nums = "1234567890"
 
         res = []
         for i in range(len(str(self.low)), len(str(self.high)) + 1):
-            for j in range(len(set) - i):
-                temp = int(set[j:j + i])
+            for j in range(len(nums) - i):
+                temp = int(nums[j:j + i])
                 if self.high >= temp >= self.low:
                     res.append(temp)
 
