@@ -1,5 +1,11 @@
 import pygame
 import numpy as np
+import platform
+
+if platform.system() == "Linux":
+    folder_symbol = '/'
+elif platform.system() == "Windows":
+    folder_symbol = '\\'
 
 
 def matrix(size, lst):
@@ -126,14 +132,14 @@ lst = []
 time_delay = 2
 size = 35
 
-ant_img = pygame.image.load('src/ant_20.png')
-grey_img = pygame.image.load('src/bg_grey_20.jpg')
-white_img = pygame.image.load('src/bg_white_20.jpg')
+ant_img = pygame.image.load('src' + folder_symbol + 'ant_20.png')
+grey_img = pygame.image.load('src' + folder_symbol + 'bg_grey_20.jpg')
+white_img = pygame.image.load('src' + folder_symbol + 'bg_white_20.jpg')
 
-ant_up_img = pygame.image.load('src/ant_20_up.png')
-ant_down_img = pygame.image.load('src/ant_20_down.png')
-ant_right_img = pygame.image.load('src/ant_20_right.png')
-ant_left_img = pygame.image.load('src/ant_20_left.png')
+ant_up_img = pygame.image.load('src' + folder_symbol + 'ant_20_up.png')
+ant_down_img = pygame.image.load('src' + folder_symbol + 'ant_20_down.png')
+ant_right_img = pygame.image.load('src' + folder_symbol + 'ant_20_right.png')
+ant_left_img = pygame.image.load('src' + folder_symbol + 'ant_20_left.png')
 
 vertical_strip_img = pygame.image.load('src/vertical_strip.jpg')
 horizontal_strip_img = pygame.image.load('src/horizontal_strip.jpg')
