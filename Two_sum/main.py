@@ -21,4 +21,5 @@ def two_sum(lst: List[int], k: int) -> bool:
     return False
 
 
-print(two_sum(lst=[4, 7, 1, -3, 2], k=5))
+if __name__ == '__main__':
+    print(two_sum(lst=[4, 7, 1, -3, 2], k=5))
