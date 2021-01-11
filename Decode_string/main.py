@@ -20,7 +20,6 @@ pat = r"(\d+)\[(\w+)\]"
 class Solution:
     def __init__(self, s: str):
         self.line = s
-        print(self.line)
 
     def decode_string(self) -> str:
         elements = re.findall(pat, self.line)
@@ -35,4 +34,4 @@ class Solution:
 
 if __name__ == "__main__":
     line = "3[a2[c]]"
-    print(Solution(line).decode_string())    # "accaccacc"
+    print(Solution(line).decode_string())    # accaccacc

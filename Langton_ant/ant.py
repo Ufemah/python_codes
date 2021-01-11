@@ -2,15 +2,20 @@ import pygame
 import numpy as np
 import platform
 
-if platform.system() == "Linux":
-    folder_symbol = '/'
-elif platform.system() == "Windows":
+folder_symbol = '/'
+
+if platform.system() == "Windows":
     folder_symbol = '\\'
 
+lst = []
 
-def matrix(size, lst):
-    _matrix = np.eye(size) * 0
-    for i in lst:
+time_delay = 2
+size = 50
+
+
+def matrix(_size, _lst):
+    _matrix = np.eye(_size) * 0
+    for i in _lst:
         _matrix[i[0]][i[1]] += 1
     return _matrix
 
@@ -126,11 +131,6 @@ class Strips:
             surface.blit(vertical_strip_img, self.rect_vertical.move(white_img.get_rect().h * i, 0))
             surface.blit(horizontal_strip_img, self.rect_horizontal.move(0, white_img.get_rect().w * i))
 
-
-lst = []
-
-time_delay = 2
-size = 35
 
 ant_img = pygame.image.load('src' + folder_symbol + 'ant_20.png')
 grey_img = pygame.image.load('src' + folder_symbol + 'bg_grey_20.jpg')

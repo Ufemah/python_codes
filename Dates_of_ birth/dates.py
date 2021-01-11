@@ -15,6 +15,4 @@ n = 25000   # number of sets
 
 print("chance of having birthday at the same day")
 for i in range(2, st+1):
-    print("{0} people: chance == {1}%".format(i, test(n, i)/n))
-
-
+    print("{0} people: chance == {1}%".format(i, 100*test(n, i)/n))

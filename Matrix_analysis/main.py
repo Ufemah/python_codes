@@ -68,7 +68,7 @@ class Matrix:
 
         ones = np.ones_like(self.matrix)[0]
 
-        if np.all(ones.dot(self.matrix) != ones.dot(self.matrix.T)):
+        if np.any(ones.dot(self.matrix) != ones.dot(self.matrix.T)):
             return False
 
         return True

@@ -1,5 +1,5 @@
 import numpy as np
-
+import datetime
 
 class Neural:
     def __init__(self):
@@ -33,6 +33,7 @@ class Neural:
 
 
 if __name__ == "__main__":
+    t = datetime.datetime.now()
     n = Neural()
 
     print("start weights:")
@@ -55,3 +56,4 @@ if __name__ == "__main__":
     print("test example:", example)
 
     print("result:", n.work(example))
+    print(datetime.datetime.now() - t)
