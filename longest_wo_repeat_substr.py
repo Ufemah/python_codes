@@ -15,14 +15,12 @@ class Solution:
         """
         length = 0
         res = ''
-        substr = ''
 
         for el in self.string:
 
             if el in res:
                 if len(res) > length:
                     length = len(res)
-                    substr = res
                 res = res[res.index(el) - 1::][1::]
             else:
                 res += el
@@ -30,7 +28,6 @@ class Solution:
             if length > int(len(self.string) / 2) + 1:
                 return length
 
-        # print(substr)
         return length
 
     def long_way(self):
@@ -39,7 +36,6 @@ class Solution:
         :return: length of longest substr w/o repeating
         """
         length = 0
-        substr = ''
 
         for i in range(len(self.string)):
             for j in range(len(self.string)):
@@ -48,11 +44,9 @@ class Solution:
 
                     if len(el) == len(set(el)) and len(el) > length:
                         length = len(el)
-                        substr = el
 
                         if length > int(len(self.string) / 2) + 1:
                             return length
-        # print(substr)
         return length
 
 

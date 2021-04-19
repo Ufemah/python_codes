@@ -132,17 +132,17 @@ class Strips:
             surface.blit(horizontal_strip_img, self.rect_horizontal.move(0, white_img.get_rect().w * i))
 
 
-ant_img = pygame.image.load('src' + folder_symbol + 'ant_20.png')
-grey_img = pygame.image.load('src' + folder_symbol + 'bg_grey_20.jpg')
-white_img = pygame.image.load('src' + folder_symbol + 'bg_white_20.jpg')
+ant_img = pygame.image.load('src' + folder_symbol + 'langton' + folder_symbol + 'ant_20.png')
+grey_img = pygame.image.load('src' + folder_symbol + 'langton' + folder_symbol + 'bg_grey_20.jpg')
+white_img = pygame.image.load('src' + folder_symbol + 'langton' + folder_symbol + 'bg_white_20.jpg')
 
-ant_up_img = pygame.image.load('src' + folder_symbol + 'ant_20_up.png')
-ant_down_img = pygame.image.load('src' + folder_symbol + 'ant_20_down.png')
-ant_right_img = pygame.image.load('src' + folder_symbol + 'ant_20_right.png')
-ant_left_img = pygame.image.load('src' + folder_symbol + 'ant_20_left.png')
+ant_up_img = pygame.image.load('src' + folder_symbol + 'langton' + folder_symbol + 'ant_20_up.png')
+ant_down_img = pygame.image.load('src' + folder_symbol + 'langton' + folder_symbol + 'ant_20_down.png')
+ant_right_img = pygame.image.load('src' + folder_symbol + 'langton' + folder_symbol + 'ant_20_right.png')
+ant_left_img = pygame.image.load('src' + folder_symbol + 'langton' + folder_symbol + 'ant_20_left.png')
 
-vertical_strip_img = pygame.image.load('src/vertical_strip.jpg')
-horizontal_strip_img = pygame.image.load('src/horizontal_strip.jpg')
+vertical_strip_img = pygame.image.load('src' + folder_symbol + 'langton' + folder_symbol +'vertical_strip.jpg')
+horizontal_strip_img = pygame.image.load('src' + folder_symbol + 'langton' + folder_symbol + 'horizontal_strip.jpg')
 
 window = w, h = white_img.get_rect().w * size + 1, white_img.get_rect().h * size + 1
 screen = pygame.display.set_mode(window)

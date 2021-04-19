@@ -8,7 +8,7 @@ black = 0, 0, 0
 
 screen = pygame.display.set_mode(size)
 
-ball = pygame.image.load("intro_ball.gif")
+ball = pygame.image.load("src/screen_saver/intro_ball.gif")
 ballrect = ball.get_rect()
 
 screen.fill(black)
@@ -32,3 +32,4 @@ while True:
 
     screen.blit(ball, ballrect)
     pygame.display.update()
+    pygame.time.delay(2)

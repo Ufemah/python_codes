@@ -6,31 +6,31 @@ from typing import List
 
 
 class Solution:
-    def __init__(self, num: int):
-        self.n = num
+    def __init__(self):
+        self.n = 0
         self.res = []
-
-        print("num = {}".format(self.n))
 
     def generator(self, s, to_open, to_close):
         if to_open > to_close:
             return
+
         elif to_open == 0 and to_close == 0:
             self.res.append(s)
+            return
+
         elif to_open == 0:
             self.generator(s + ')', to_open, to_close - 1)
+
         else:
             self.generator(s + '(', to_open - 1, to_close)
             self.generator(s + ')', to_open, to_close - 1)
 
-    def generate_parentheses(self) -> List[str]:
+    def generate_parentheses(self, n: int) -> List[str]:
+        self.n = n
         self.res = []   # clean res before generating
+        
         self.generator(s='', to_open=self.n, to_close=self.n)
         return self.res
 
 
-print(Solution(3).generate_parentheses())
-
-sol = Solution(4)
-print(sol.generate_parentheses())
-print(sol.generate_parentheses())
+print(Solution().generate_parentheses(3))

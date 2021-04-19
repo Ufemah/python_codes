@@ -1,4 +1,4 @@
-from Matrix_analysis.main import *
+from matrix_analysis import *
 import unittest
 # numpy was imported at main file
 
