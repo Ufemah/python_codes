@@ -9,9 +9,11 @@ class Towers:
         self.move_from = -1
         self.move_to = -1
         self.n = n
+        self.count = 0
 
         self.columns = [[], [], []]
         self.dict = {i: 0 for i in range(1, n + 1)}
+        self.text_dict = self.dict.copy()
 
         self.root = tk.Tk()
         self.root.title("Hanoi towers")
@@ -28,7 +30,10 @@ class Towers:
             l3 = 285 - (r - 1) * 10
             l4 = 560 - (r - 1) * 40
             self.dict[r] = self.can.create_rectangle(l1, l2, l3, l4, fil='#F1C40F')
+            self.text_dict[r] = self.can.create_text(175, (l2 + l4) / 2, text=n - r + 1)
             self.columns[0].append(r)
+
+        self.moves_count = self.can.create_text(75, 15, fill="black", font="Arial 20", text="Moves: 0")
 
         self.can.bind("<Button-1>", self.key_down)
 
@@ -36,7 +41,7 @@ class Towers:
         if not self.in_progress:
             self.in_progress = True
             if not self.button_flag:
-                self.move_from = key.x // 325
+                self.move_from = key.x // 334
 
                 self.button_flag = True
                 try:
@@ -46,9 +51,9 @@ class Towers:
                 self.in_progress = False
             else:
                 self.in_progress = True
-                self.move_to = key.x // 325
+                self.move_to = key.x // 334
 
-                if len(self.columns[self.move_to]) != 0:
+                if len(self.columns[self.move_to]) != 0 and len(self.columns[self.move_from]) != 0:
                     if self.columns[self.move_from][-1] < self.columns[self.move_to][-1]:
                         self.move_to = self.move_from
 
@@ -57,6 +62,9 @@ class Towers:
                     self.move_down(self.columns[self.move_from][-1])
                     self.columns[self.move_to].append(self.columns[self.move_from][-1])
                     self.columns[self.move_from] = self.columns[self.move_from][:-1]
+
+                    self.count += 1
+                    self.can.itemconfigure(self.moves_count, text="Moves: {}".format(self.count))
                 except IndexError:
                     pass
                 self.button_flag = False
@@ -64,13 +72,15 @@ class Towers:
 
                 # print(self.columns)
                 if len(self.columns[1]) == self.n or len(self.columns[2]) == self.n:
-                    print("You win!")
+                    self.can.create_text(500, 300, fill="black", font="Arial 40", text="You win!")
+                    self.in_progress = True
 
     def move(self, obj):
         if self.move_from < self.move_to:
             pos = self.can.coords(self.dict[obj])
             if (pos[2] - pos[0]) / 2 + pos[0] < self.move_to * 325 + 175:
                 self.can.move(self.dict[obj], 5, 0)
+                self.can.move(self.text_dict[obj], 5, 0)
                 self.can.update()
                 self.can.after(1)
                 self.move(obj)
@@ -79,29 +89,29 @@ class Towers:
             pos = self.can.coords(self.dict[obj])
             if (pos[2] - pos[0]) / 2 + pos[0] > self.move_to * 325 + 175:
                 self.can.move(self.dict[obj], -5, 0)
+                self.can.move(self.text_dict[obj], -5, 0)
                 self.can.update()
                 self.can.after(1)
                 self.move(obj)
-        else:
-            pass
 
     def move_up(self, obj):
         pos = self.can.coords(self.dict[obj])
         if pos[1] > 100:
             self.can.move(self.dict[obj], 0, -5)
+            self.can.move(self.text_dict[obj], 0, -5)
             self.can.update()
             self.can.after(1)
             self.move_up(obj)
 
     def move_down(self, obj):
-        pos = self.can.coords(self.dict[obj])
-
         length = len(self.columns[self.move_to])
         if self.move_to != self.move_from:
             length += 1
 
+        pos = self.can.coords(self.dict[obj])
         if pos[1] < 600 - length * 40:
             self.can.move(self.dict[obj], 0, 5)
+            self.can.move(self.text_dict[obj], 0, 5)
             self.can.update()
             self.can.after(1)
             self.move_down(obj)
