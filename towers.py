@@ -10,6 +10,9 @@ class Towers:
         self.move_to = -1
         self.n = n
         self.count = 0
+        self.speed = 20
+        self.delay = 10
+        self.size = self.height, self.width = 600, 1000
 
         self.columns = [[], [], []]
         self.dict = {i: 0 for i in range(1, n + 1)}
@@ -18,19 +21,19 @@ class Towers:
         self.root = tk.Tk()
         self.root.title("Hanoi towers")
 
-        self.can = tk.Canvas(self.root, height=600, width=1000, bg='#27AE60')
+        self.can = tk.Canvas(self.root, height=self.height, width=self.width, bg='#27AE60')
         self.can.pack()
-        self.can.create_rectangle(162.5, 600 - (n * 40 + 20), 187.5, 600, fil='#5F6A6A')
+        self.can.create_rectangle(147.5, 600 - (n * 40 + 20), 172.5, 600, fil='#5F6A6A')
         self.can.create_rectangle(487.5, 600 - (n * 40 + 20), 512.5, 600, fil='#5F6A6A')
-        self.can.create_rectangle(812.5, 600 - (n * 40 + 20), 837.5, 600, fil='#5F6A6A')
+        self.can.create_rectangle(827.5, 600 - (n * 40 + 20), 852.5, 600, fil='#5F6A6A')
 
         for r in range(1, n + 1):
-            l1 = 65 + (r - 1) * 10
+            l1 = 50 + (r - 1) * 10
             l2 = 600 - (r - 1) * 40
-            l3 = 285 - (r - 1) * 10
+            l3 = 270 - (r - 1) * 10
             l4 = 560 - (r - 1) * 40
             self.dict[r] = self.can.create_rectangle(l1, l2, l3, l4, fil='#F1C40F')
-            self.text_dict[r] = self.can.create_text(175, (l2 + l4) / 2, text=n - r + 1)
+            self.text_dict[r] = self.can.create_text(161, (l2 + l4) / 2, text=n - r + 1)
             self.columns[0].append(r)
 
         self.moves_count = self.can.create_text(75, 15, fill="black", font="Arial 20", text="Moves: 0")
@@ -47,74 +50,77 @@ class Towers:
                 try:
                     self.move_up(self.columns[self.move_from][-1])
                 except IndexError:
-                    pass
-                self.in_progress = False
+                    self.in_progress = False
+
             else:
                 self.in_progress = True
                 self.move_to = key.x // 334
+
+                print(self.move_from, self.move_to)
 
                 if len(self.columns[self.move_to]) != 0 and len(self.columns[self.move_from]) != 0:
                     if self.columns[self.move_from][-1] < self.columns[self.move_to][-1]:
                         self.move_to = self.move_from
 
                 try:
-                    self.move(self.columns[self.move_from][-1])
-                    self.move_down(self.columns[self.move_from][-1])
+                    self.move_side(self.columns[self.move_from][-1])
                     self.columns[self.move_to].append(self.columns[self.move_from][-1])
                     self.columns[self.move_from] = self.columns[self.move_from][:-1]
 
                     self.count += 1
                     self.can.itemconfigure(self.moves_count, text="Moves: {}".format(self.count))
                 except IndexError:
-                    pass
-                self.button_flag = False
-                self.in_progress = False
+                    self.in_progress = False
 
-                # print(self.columns)
+                self.button_flag = False
+
                 if len(self.columns[1]) == self.n or len(self.columns[2]) == self.n:
                     self.can.create_text(500, 300, fill="black", font="Arial 40", text="You win!")
                     self.in_progress = True
 
-    def move(self, obj):
+    def move_side(self, obj):
         if self.move_from < self.move_to:
             pos = self.can.coords(self.dict[obj])
-            if (pos[2] - pos[0]) / 2 + pos[0] < self.move_to * 325 + 175:
-                self.can.move(self.dict[obj], 5, 0)
-                self.can.move(self.text_dict[obj], 5, 0)
+            if (pos[2] - pos[0]) / 2 + pos[0] < self.move_to * 330 + 170:
+                self.can.move(self.dict[obj], self.speed, 0)
+                self.can.move(self.text_dict[obj], self.speed, 0)
                 self.can.update()
-                self.can.after(1)
-                self.move(obj)
+                self.can.after(self.delay, self.move_side, obj)
+            else:
+                self.can.after(self.delay, self.move_down, obj)
 
         elif self.move_from > self.move_to:
             pos = self.can.coords(self.dict[obj])
-            if (pos[2] - pos[0]) / 2 + pos[0] > self.move_to * 325 + 175:
-                self.can.move(self.dict[obj], -5, 0)
-                self.can.move(self.text_dict[obj], -5, 0)
+            if (pos[2] - pos[0]) / 2 + pos[0] > self.move_to * 330 + 170:
+                self.can.move(self.dict[obj], -self.speed, 0)
+                self.can.move(self.text_dict[obj], -self.speed, 0)
                 self.can.update()
-                self.can.after(1)
-                self.move(obj)
+                self.can.after(self.delay, self.move_side, obj)
+            else:
+                self.can.after(self.delay, self.move_down, obj)
+
+        else:
+            self.can.after(self.delay, self.move_down, obj)
 
     def move_up(self, obj):
         pos = self.can.coords(self.dict[obj])
         if pos[1] > 100:
-            self.can.move(self.dict[obj], 0, -5)
-            self.can.move(self.text_dict[obj], 0, -5)
+            self.can.move(self.dict[obj], 0, -self.speed)
+            self.can.move(self.text_dict[obj], 0, -self.speed)
             self.can.update()
-            self.can.after(1)
-            self.move_up(obj)
+            self.can.after(self.delay, self.move_up, obj)
+        else:
+            self.in_progress = False
 
     def move_down(self, obj):
-        length = len(self.columns[self.move_to])
-        if self.move_to != self.move_from:
-            length += 1
-
         pos = self.can.coords(self.dict[obj])
-        if pos[1] < 600 - length * 40:
-            self.can.move(self.dict[obj], 0, 5)
-            self.can.move(self.text_dict[obj], 0, 5)
+        if pos[1] < self.height - len(self.columns[self.move_to]) * 40:
+            self.can.move(self.dict[obj], 0, self.speed)
+            self.can.move(self.text_dict[obj], 0, self.speed)
             self.can.update()
-            self.can.after(1)
-            self.move_down(obj)
+            self.can.after(self.delay, self.move_down, obj)
+        else:
+            self.in_progress = False
 
     def play(self):
         self.can.focus_set()
