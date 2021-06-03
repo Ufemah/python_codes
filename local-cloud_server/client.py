@@ -7,7 +7,7 @@ import socket
 
 HOST = 'localhost'
 PORT = 20001
-folder_icon = '📂'
+folder_icon = 'folder: '
 
 
 class Log:
@@ -17,8 +17,7 @@ class Log:
         self.path_id = None
 
         self.root = tk.Tk()
-        self.root.geometry("370x240+150+150")
-        self.root.iconbitmap('icon.ico')
+        self.root.geometry("500x220+150+150")
         self.root.title('Login')
 
         tk.Label(text="Login", font="Arial, 15").grid(row=1, column=0)
@@ -66,8 +65,7 @@ class Log:
     def new_user(self):
         children = tk.Toplevel(self.root)
         children.title("Register")
-        children.iconbitmap('icon.ico')
-        children.geometry("385x240+100+100")
+        children.geometry("485x240+100+100")
 
         tk.Label(children, text="Register", font="Arial, 12").grid(row=0, column=0)
 
@@ -153,8 +151,7 @@ class Main:
         self.test = None
 
         self.root = tk.Tk()
-        self.root.geometry("720x480+300+300")
-        self.root.iconbitmap('icon.ico')
+        self.root.geometry("950x480+300+300")
         self.root.title('Cloud storage')
 
         self.lst_box = tk.Listbox(selectmode=tk.EXTENDED, width=90, height=30)
@@ -191,7 +188,6 @@ class Main:
     def greet_admin(self):
         root1 = tk.Tk()
         root1.geometry("400x80+150+150")
-        root1.iconbitmap('icon.ico')
         root1.title('Error')
 
         label_one = tk.Label(root1, text='Hello, admin')
@@ -218,11 +214,11 @@ class Main:
         s.shutdown(2)
         s.close()
 
-        for i in reversed(files):
+        for i in reversed(files[:-1]):
             if i != '\n':
                 self.lst_box.insert(0, i)
 
-        for i in reversed(paths):
+        for i in reversed(paths[:-1]):
             if i != '\n':
                 self.lst_box.insert(0, folder_icon + i)
 
@@ -233,7 +229,7 @@ class Main:
         out = s.makefile('wb', 0)
 
         out.write(bytes('add path', encoding='utf-8') + b'\n')
-        out.write(bytes(self.folder + '\\' + str(entry.get()), encoding='utf-8') + b'\n')
+        out.write(bytes(self.folder + '/' + str(entry.get()), encoding='utf-8') + b'\n')
 
         window.destroy()
         self.refresh()
@@ -242,7 +238,6 @@ class Main:
         window = tk.Toplevel()
         window.geometry("360x120+350+350")
         window.title('New folder')
-        window.iconbitmap('icon.ico')
 
         label = tk.Label(window, text='Input folder name', width=25, height=4)
         label.pack()
@@ -258,14 +253,14 @@ class Main:
             select = list(self.lst_box.curselection())
             file_name = self.lst_box.get(0, tk.END)[int(select[0])]
             if folder_icon in file_name:
-                self.folder = self.folder + '\\' + file_name.replace(folder_icon, '')
+                self.folder = self.folder + '/' + file_name.replace(folder_icon, '')
                 self.refresh()
         except IndexError:
             pass
 
     def back_folder(self):
         if self.folder != self.id or self.is_admin == 1:
-            self.folder = '\\'.join(self.folder.split('\\')[0:-1])
+            self.folder = '/'.join(self.folder.split('/')[0:-1])
         self.refresh()
 
     def delete_file_or_path(self):
@@ -279,7 +274,7 @@ class Main:
         select = list(self.lst_box.curselection())
         try:
             file_name = self.lst_box.get(0, tk.END)[int(select[0])].replace(folder_icon, '')
-            out.write(bytes(self.folder + '\\' + file_name, encoding='utf-8') + b'\n')
+            out.write(bytes(self.folder + '/' + file_name, encoding='utf-8') + b'\n')
 
             self.refresh()
             print(file_name, 'deleted')
@@ -291,8 +286,8 @@ class Main:
         root.withdraw()
         root.wm_attributes('-topmost', 1)
 
-        file_path = str(filedialog.askopenfilename()).replace('/', '\\')
-        file_name = file_path.split("\\")[-1]
+        file_path = str(filedialog.askopenfilename()).replace('/', '/')
+        file_name = file_path.split("/")[-1]
 
         if folder_icon not in file_name:
 
@@ -303,7 +298,7 @@ class Main:
 
             out.write(bytes('send file', encoding='utf-8') + b'\n')
 
-            out.write(bytes(self.folder + '\\' + file_name, encoding='utf-8') + b'\n')  # send file name to server
+            out.write(bytes(self.folder + '/' + file_name, encoding='utf-8') + b'\n')  # send file name to server
             try:
                 file_send = open(file_path, "rb")
                 to_send = file_send.read(1024)
@@ -323,7 +318,6 @@ class Main:
         else:
             root1 = tk.Tk()
             root1.geometry("400x80+150+150")
-            root1.iconbitmap('icon.ico')
             root1.title('Error')
 
             label_one = tk.Label(root1, text='You can\'t use forbidden symbols')
@@ -346,13 +340,13 @@ class Main:
                 pass
             else:
                 out.write(bytes('get file', encoding='utf-8') + b'\n')
-                out.write(bytes(self.folder + '\\' + file_name, encoding='utf-8') + b'\n')
+                out.write(bytes(self.folder + '/' + file_name, encoding='utf-8') + b'\n')
 
                 root = tk.Tk()
                 root.withdraw()
                 root.wm_attributes('-topmost', 1)
 
-                file_path = filedialog.asksaveasfilename(initialfile=file_name).replace('/', '\\')
+                file_path = filedialog.asksaveasfilename(initialfile=file_name).replace('/', '/')
 
                 try:
                     file_get = open(file_path, "wb")
@@ -362,7 +356,7 @@ class Main:
                         get = inp.read()
                     file_get.close()
 
-                    print(file_path.split('\\')[-1], 'saved')
+                    print(file_path.split('/')[-1], 'saved')
 
                 except FileNotFoundError:
                     pass
