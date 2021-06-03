@@ -3,6 +3,8 @@ import tkinter as tk
 
 class Towers:
     def __init__(self, n):
+        assert n < 10, "too many disks"
+
         self.speed = 20  # speed of moving
         self.delay = 10  # delay between frames
         self.size = self.height, self.width = 600, 1000   # window size
@@ -11,36 +13,38 @@ class Towers:
         self.button_flag = False  # if True -> move_from pin is chosen
         self.move_from = -1
         self.move_to = -1
-        self.n = n
+        self.n = int(n)
         self.count = 0
 
         self.columns = [[], [], []]   # pin
-        self.dict = {i: 0 for i in range(1, n + 1)}   # dictionary that will keep rect objects
-        self.text_dict = self.dict.copy()  # dictionary for rect numbers
+        self.dict = {i: 0 for i in range(1, n + 1)}   # dictionary for disks
+        self.text_dict = self.dict.copy()  # dictionary for disks numbers
 
         self.root = tk.Tk()
         self.root.title("Hanoi towers")
-
         self.can = tk.Canvas(self.root, height=self.height, width=self.width, bg='#27AE60')
         self.can.pack()
 
+        self.moves_count = self.can.create_text(75, 15, fill="black", font="Arial 20", text="Moves: 0")
+        self.create_objects()
+
+        self.can.bind("<Button-1>", self.key_down)
+
+    def create_objects(self):
         # pins
         for i in range(0, 3):
-            self.can.create_rectangle(147.5 + 340 * i, 600 - (n * 40 + 20),
+            self.can.create_rectangle(147.5 + 340 * i, 600 - (self.n * 40 + 20),
                                       172.5 + 340 * i, 600, fil='#5F6A6A')
 
-        for r in range(1, n + 1):
+        # disks
+        for r in range(1, self.n + 1):
             l1 = 50 + (r - 1) * 10
             l2 = 600 - (r - 1) * 40
             l3 = 270 - (r - 1) * 10
             l4 = 560 - (r - 1) * 40
             self.dict[r] = self.can.create_rectangle(l1, l2, l3, l4, fil='#F1C40F')
-            self.text_dict[r] = self.can.create_text(161, (l2 + l4) / 2, text=n - r + 1)
+            self.text_dict[r] = self.can.create_text(161, (l2 + l4) / 2, text=self.n - r + 1)
             self.columns[0].append(r)
-
-        self.moves_count = self.can.create_text(75, 15, fill="black", font="Arial 20", text="Moves: 0")
-
-        self.can.bind("<Button-1>", self.key_down)
 
     def key_down(self, key):
         if not self.in_progress:
@@ -83,10 +87,19 @@ class Towers:
                 # allow player click
                 self.button_flag = False
 
-                # check if game is finished
-                if len(self.columns[1]) == self.n or len(self.columns[2]) == self.n:
-                    self.can.create_text(self.width / 2, self.height / 2, fill="black", font="Arial 40", text="You win!")
-                    self.in_progress = True
+            # check if game is finished
+            if len(self.columns[1]) == self.n or len(self.columns[2]) == self.n:
+                self.in_progress = True
+                self.win()
+
+    def move_up(self, obj):
+        if self.can.coords(self.dict[obj])[1] > 100:
+            self.can.move(self.dict[obj], 0, -self.speed)
+            self.can.move(self.text_dict[obj], 0, -self.speed)
+            self.can.update()
+            self.can.after(self.delay, self.move_up, obj)
+        else:
+            self.in_progress = False
 
     def move_side(self, obj):
         # move right
@@ -119,15 +132,6 @@ class Towers:
         else:
             self.can.after(self.delay, self.move_down, obj)
 
-    def move_up(self, obj):
-        if self.can.coords(self.dict[obj])[1] > 100:
-            self.can.move(self.dict[obj], 0, -self.speed)
-            self.can.move(self.text_dict[obj], 0, -self.speed)
-            self.can.update()
-            self.can.after(self.delay, self.move_up, obj)
-        else:
-            self.in_progress = False
-
     def move_down(self, obj):
         pos = self.can.coords(self.dict[obj])
         if pos[1] < self.height - len(self.columns[self.move_to]) * 40:
@@ -138,15 +142,18 @@ class Towers:
         else:
             self.in_progress = False
 
+    def win(self):
+        self.can.create_rectangle(0, 0, self.width, self.height, fil='#000000', stipple="gray50")
+        self.can.delete(self.moves_count)
+        self.can.create_text(self.width / 2, self.height / 2, fill="white", font="Arial 40", text="You win!")
+        self.can.create_text(self.width / 2, 50 + self.height / 2, fill="white", font="Arial 25",
+                             text="Moves count: {}".format(self.count))
+
     def play(self):
         self.can.focus_set()
         self.root.mainloop()
 
 
 if __name__ == "__main__":
-    k = 3
-
-    if k > 9:
-        print("k-value is too big")
-    else:
-        Towers(k).play()
+    k = 9
+    Towers(k).play()

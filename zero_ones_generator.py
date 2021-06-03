@@ -1,4 +1,4 @@
-class Onez:
+class Ones:
     def __init__(self, n):
         self.n = n
         self.res = []
@@ -21,4 +21,4 @@ class Onez:
 
 
 if __name__ == "__main__":
-    print(Onez(5).generator())
+    print(Ones(5).generator())
