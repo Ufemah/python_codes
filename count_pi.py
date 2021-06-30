@@ -9,13 +9,15 @@ import tkinter as tk
 
 class CountPi:
     def __init__(self):
+        # init vars for counting pi
         self.value = 0
         self.radius = 1
         self.side = sqrt(2) * self.radius
         self.sides_count = 2
         self.max_step = 200000
 
-        self.delay = 1000
+        # init tkinter vars
+        self.delay = 2000
         self.window_size = self.height, self.width = 800, 800  # window size
         self.center = (400, 400)
 
@@ -32,10 +34,12 @@ class CountPi:
         self.driver()
 
     def driver(self):
+        # recursive call main after delay
         self.main()
         self.canvas.after(self.delay, self.driver)
 
     def main(self):
+        # count pi value
         if self.sides_count < self.max_step:
             a = self.side / 2
             b = self.radius - sqrt(self.radius ** 2 - a ** 2)
@@ -47,13 +51,15 @@ class CountPi:
 
             self.sides_count *= 2
 
+        # create points to create polygon
         vertex = []
 
         for i in range(0, self.sides_count):
-            vertex.append((self.center[1] + self.center[0] * sin((pi / self.sides_count * 2) * (i + 0.5)) * 0.8,
-                           self.center[1] + self.center[0] * cos((pi / self.sides_count * 2) * (i + 0.5)) * 0.8))
+            vertex.append((self.center[1] + self.center[0] * cos((pi / self.sides_count * 2) * i) * 0.8,
+                           self.center[1] + self.center[0] * sin((pi / self.sides_count * 2) * i) * 0.8))
         vertex.append(vertex[0])
 
+        # update polygon and text
         self.canvas.delete(self.line)
         self.line = self.canvas.create_line(vertex)
         self.canvas.itemconfigure(self.pi_draw, text="P / 2R = %.10f" % self.value)

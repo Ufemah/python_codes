@@ -1,12 +1,20 @@
 import socketserver
 import shutil
 import os
+import sys
 import sqlite3
 
 server_path = 'server_data'
 HOST = 'localhost'
-PORT = 20001
+PORT = 20000
 code_d = {1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven', 8: 'eight', 9: 'nine', 0: 'zero'}
+
+folder_symbol = "/"
+
+if sys.platform == "linux":
+    folder_symbol = "/"
+elif sys.platform == "win32":
+	folder_symbol = "\\"
 
 
 class RequestHandler(socketserver.StreamRequestHandler):
@@ -84,14 +92,14 @@ class RequestHandler(socketserver.StreamRequestHandler):
         print(get)
         for i in str(get):
             number += code_d[int(i)]
-        os.mkdir(server_path + '/' + number)
+        os.mkdir(server_path + folder_symbol + number)
 
     def server_path(self):
         folder = str(self.rfile.readline().strip(), encoding='utf-8')
-        print('path:', list(folder))
+        print('path:', folder)
         files = []
         paths = []
-        for (path, name, filename) in os.walk(server_path + '/' + folder):
+        for (path, name, filename) in os.walk(server_path + folder_symbol + folder):
             files.extend(filename)
             paths.extend(name)
             break
@@ -110,22 +118,22 @@ class RequestHandler(socketserver.StreamRequestHandler):
     def add_path(self):
         path_name = str(self.rfile.readline().strip(), encoding='utf-8')
         print(path_name)
-        os.makedirs(server_path + '/' + path_name)
+        os.makedirs(server_path + folder_symbol + path_name)
 
     def delete_file_or_path(self):
         file_name = str(self.rfile.readline().strip(), encoding='utf-8')
         print(file_name)
         try:
-            os.remove(server_path + '/' + file_name)
+            os.remove(server_path + folder_symbol + file_name)
         except PermissionError:
-            shutil.rmtree(server_path + '/' + file_name)
+            shutil.rmtree(server_path + folder_symbol + file_name)
         except IsADirectoryError:
-            os.rmdir(server_path + '/' + file_name)
+        	shutil.rmtree(server_path + folder_symbol + file_name)
 
     def server_get_file_from_user(self):
         try:
             file_name = str(self.rfile.readline().strip(), encoding='utf-8')
-            f = open(server_path + '/' + file_name, "wb")
+            f = open(server_path + folder_symbol + file_name, "wb")
             print(file_name)
 
             data = self.rfile.read(1024)
@@ -142,7 +150,7 @@ class RequestHandler(socketserver.StreamRequestHandler):
             file_name = str(self.rfile.readline().strip(), encoding='utf-8')
             print(file_name)
 
-            f = open(server_path + '/' + file_name, "rb")
+            f = open(server_path + folder_symbol + file_name, "rb")
             to_send = f.read(1024)
             while to_send:
                 self.wfile.write(to_send)

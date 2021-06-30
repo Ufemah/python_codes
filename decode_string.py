@@ -33,5 +33,5 @@ class Solution:
 
 
 if __name__ == "__main__":
-    line = "3[a2[c]]"
-    print(Solution(line).decode_string())    # accaccacc
+    inp = input("type code (for example 3[a2[c]])")
+    print(Solution(inp).decode_string())    # accaccacc
