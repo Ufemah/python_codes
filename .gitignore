@@ -132,6 +132,9 @@ dmypy.json
 constants.py
 static/
 
+# Jupyter files
+.ipynb_checkpoints
+
 # PyCharm system files
 .idea/*
 .idea/
