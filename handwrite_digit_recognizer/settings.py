@@ -1,0 +1,19 @@
+from pygame import font
+
+font.init()
+UI_FONT = font.SysFont("arial", 40)
+
+LINE_RADIUS = 5
+
+WIDTH, HEIGHT = 800, 800
+SIDE_PANEL_WIDTH = 300
+
+BLACK_COLOR = (0, 0, 0)
+WHITE_COLOR = (255, 255, 255)
+RED_COLOR = (255, 0, 0)
+GREEN_COLOR = (0, 255, 0)
+BLUE_COLOR = (0, 0, 255)
+
+UI_COLOR = (0, 125, 220)
+CLEAR_BUTTON_COLOR = (255, 0, 0)
+PRESSED_CLEAR_BUTTON_COLOR = (0, 255, 0)
