@@ -1,10 +1,18 @@
 import pygame
 import numpy as np
+
 from settings import *
+from model_predicting import Model
 
 
 class Paint:
     def __init__(self):
+
+        # init CNN model
+        self.model = Model()
+
+        # init prediction results as zeros
+        self.model_result = np.zeros(10)
 
         # init constants
         self.width, self.height = WIDTH, HEIGHT
@@ -18,33 +26,38 @@ class Paint:
         self.collided_reset_button_color = COLLIDED_BUTTON_COLOR
         self.pressed_reset_button_color = PRESSED_RESET_BUTTON_COLOR
 
+        # init values
         self.prev_cursor_position = (0, 0)
         self.cursor_position = (0, 0)
         self.mouse_pressed = False
         self.reset_button_flag_collided = False
         self.reset_button_flag_pressed = False
 
-        pygame.display.set_caption('Paint')
+        # init flags for stopping "I'm loading" animation
+        self.init_passed_flag1 = False
+        self.init_passed_flag2 = False
 
+        # init screen
+        pygame.display.set_caption('Paint')
         self.screen = pygame.display.set_mode((self.width + self.ui_width, self.height))
 
+        # init surfaces
         self.paint_surface = pygame.Surface((self.width, self.height))
         self.paint_surface.fill(self.paint_surface_color)
 
         self.info_surface = pygame.Surface((self.ui_width, self.height))
         self.info_surface.fill(self.ui_color)
 
-        self.model_result = np.array([0.01779976,  0.14165316,  0.01029262,  0.168136,    0.03061161,
-                                      0.09046587, 0.19987289,  0.13398581,  0.03119906,  0.17598322])
-
+        # init dicts for numbers at right panel
         self.numbers = {}
         self.number_labels = {}
 
+        # draw right panel gui elements
         self.draw_ui_objects()
 
+        # init reset button vars
         self.reset_button = None
         self.text_reset = None
-        self.result = None
 
     def draw_ui_objects(self):
 
@@ -83,6 +96,7 @@ class Paint:
         # create circle at click point
         pygame.draw.circle(self.paint_surface, self.cursor_color, self.cursor_position, self.radius)
 
+        # draw line between cursor points
         if self.mouse_pressed:
 
             # get different on 0X and 0Y axis
@@ -98,6 +112,9 @@ class Paint:
                 pygame.draw.circle(self.paint_surface, self.cursor_color, (x, y), self.radius)
 
     def update_screen(self):
+
+        # fill screen with black color
+        self.screen.fill(self.paint_surface_color)
 
         # blit paint surface
         self.screen.blit(self.paint_surface, (0, 0))
@@ -116,16 +133,34 @@ class Paint:
         # blit right panel
         self.screen.blit(self.info_surface, (self.width, 0))
 
+    def loading_screensaver(self):
+        # fill paint_surface
+        pygame.draw.rect(self.paint_surface, self.paint_surface_color, (0, 0, self.width, self.height))
+
+        # init and render "I'm loading" text
+        loading_text = self.ui_font.render("I am loading", True, WHITE_COLOR)
+        w, h = loading_text.get_width(), loading_text.get_height()
+        self.paint_surface.blit(loading_text, (self.width / 2 - w / 2, self.height / 2 - h / 2))
+
     def main(self):
 
-        temp = 0
+        temp = 22  # var for making prediction every 25 iteration step
 
-        while True:
+        running = True  # var for stopping iteration
+
+        while running:
 
             temp += 1
-            event = pygame.event.wait()
+
+            event = pygame.event.poll()
+
+            if event.type == pygame.QUIT:
+                running = False
 
             if event.type == pygame.MOUSEBUTTONDOWN:
+
+                temp += 1
+
                 # process RMB and LMB click
                 if event.button == 1:
                     self.cursor_color = WHITE_COLOR
@@ -142,36 +177,53 @@ class Paint:
                     self.reset_button_flag_pressed = True
                     self.paint_surface.fill(self.paint_surface_color)
 
-            if event.type == pygame.MOUSEBUTTONUP:
-                self.mouse_pressed = False
-                self.reset_button_flag_pressed = False
-
+            # watch mouse movement, when mouse button is pressed
             if event.type == pygame.MOUSEMOTION:
+
+                # draw line between prev and current cursor positions
                 if self.mouse_pressed:
                     self.cursor_position = event.pos
                     self.draw_line()
+                    temp += 1
 
+                # change button flag to change color if cursor collides with button
                 if self.reset_button.collidepoint((event.pos[0] - self.width, event.pos[1])):
                     self.reset_button_flag_collided = True
                 else:
                     self.reset_button_flag_collided = False
 
-            if event.type == pygame.QUIT:
-                exit()
+            # stop drawing line if mouse button is up
+            if event.type == pygame.MOUSEBUTTONUP:
+                self.mouse_pressed = False
+                self.reset_button_flag_pressed = False
 
+            # update prev cursor color
             self.prev_cursor_position = self.cursor_position
 
-            # data = pygame.transform.scale(self.paint_surface, (28, 28))
-            # data = pygame.surfarray.array2d(data) / 16777215
-            # np.savetxt('data.csv', data, delimiter=',')
+            # every 25 iteration steps make prediction with CNN model
+            if temp % 25 == 0:
+                matrix = pygame.transform.scale(self.paint_surface, (28, 28))  # scale paint surface: 800x800 -> 28x28
+                matrix = pygame.surfarray.array2d(matrix)   # make matrix from surface
+
+                matrix = np.where(matrix < -1, 0, np.abs(matrix / 16777215)).T  # process matrix
+
+                self.model_result = self.model.predict(matrix) + 0.01  # make prediction and get result (+0.01 for ui)
+                self.init_passed_flag1 = True  # flag to stop "I'm loading" animation
 
             self.update_screen()
-            pygame.display.update()
 
-            # temp part for testing
-            if temp % 10 == 0:
-                self.model_result = np.random.random(10)
-                self.model_result = self.model_result / np.sum(self.model_result)
+            # if model initialized
+            if self.init_passed_flag1:
+                if not self.init_passed_flag2:
+                    # fill paint_surface if model has just been initialized
+                    self.paint_surface.fill(self.paint_surface_color)
+                    self.init_passed_flag2 = True
+                pygame.display.update()
+
+            # if model is not initialized -> show "I'm loading"
+            else:
+                self.loading_screensaver()
+                pygame.display.update()
 
 
 if __name__ == "__main__":

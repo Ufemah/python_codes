@@ -3,7 +3,7 @@ from pygame import font
 font.init()
 UI_FONT = font.SysFont("arial", 40)
 
-LINE_WIDTH = 5
+LINE_WIDTH = 25
 
 WIDTH, HEIGHT = 800, 800
 SIDE_PANEL_WIDTH = 300
