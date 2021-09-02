@@ -25,6 +25,7 @@ class Paint:
         self.reset_button_color = RESET_BUTTON_COLOR
         self.collided_reset_button_color = COLLIDED_BUTTON_COLOR
         self.pressed_reset_button_color = PRESSED_RESET_BUTTON_COLOR
+        self.iter_count = ITERATION_STEPS_FOR_PREDICTING
 
         # init values
         self.prev_cursor_position = (0, 0)
@@ -144,13 +145,13 @@ class Paint:
 
     def main(self):
 
-        temp = 22  # var for making prediction every 25 iteration step
+        steps = self.iter_count - 3  # var for making prediction every 25 iteration step
 
         running = True  # var for stopping iteration
 
         while running:
-
-            temp += 1
+            if not self.init_passed_flag1:
+                steps += 1
 
             event = pygame.event.poll()
 
@@ -159,7 +160,7 @@ class Paint:
 
             if event.type == pygame.MOUSEBUTTONDOWN:
 
-                temp += 1
+                steps += 1
 
                 # process RMB and LMB click
                 if event.button == 1:
@@ -182,9 +183,9 @@ class Paint:
 
                 # draw line between prev and current cursor positions
                 if self.mouse_pressed:
+                    steps += 1
                     self.cursor_position = event.pos
                     self.draw_line()
-                    temp += 1
 
                 # change button flag to change color if cursor collides with button
                 if self.reset_button.collidepoint((event.pos[0] - self.width, event.pos[1])):
@@ -200,14 +201,24 @@ class Paint:
             # update prev cursor color
             self.prev_cursor_position = self.cursor_position
 
-            # every 25 iteration steps make prediction with CNN model
-            if temp % 25 == 0:
+            # if screen is empty -> model_result = zeros
+            if np.equal(pygame.surfarray.array2d(self.paint_surface), np.zeros((800, 800))).all():
+                self.model_result = np.zeros(10) + 0.01
+
+            # every N iteration steps make prediction with CNN model
+            if steps % self.iter_count == 0:
+
+                steps = 0
+
                 matrix = pygame.transform.scale(self.paint_surface, (28, 28))  # scale paint surface: 800x800 -> 28x28
                 matrix = pygame.surfarray.array2d(matrix)   # make matrix from surface
 
                 matrix = np.where(matrix < -1, 0, np.abs(matrix / 16777215)).T  # process matrix
 
-                self.model_result = self.model.predict(matrix) + 0.01  # make prediction and get result (+0.01 for ui)
+                # if screen is empty -> don't update model_result
+                if not np.equal(matrix, np.zeros((28, 28))).all():
+                    self.model_result = self.model.predict(matrix)  # make prediction and get result
+                    self.model_result += 0.01  # +0.01 for info_panel
                 self.init_passed_flag1 = True  # flag to stop "I'm loading" animation
 
             self.update_screen()
