@@ -1,4 +1,6 @@
 import pygame
+import sys
+import threading
 import numpy as np
 
 from settings import *
@@ -139,6 +141,16 @@ class Paint:
         self.paint_surface.blit(loading_text, (self.width / 2 - loading_text.get_width() / 2,
                                                self.height / 2 - loading_text.get_height() / 2))
 
+    def update_result(self):
+        matrix = pygame.transform.scale(self.paint_surface, (28, 28))  # scale paint surface: 800x800 -> 28x28
+        matrix = pygame.surfarray.array2d(matrix)  # make matrix from surface
+
+        matrix = np.where(matrix < -1, 0, np.abs(matrix / 16777215)).T  # process matrix
+
+        # update model_result
+        self.model_result = self.model.predict(matrix)  # make prediction and get result
+        self.model_result += 0.01  # +0.01 for info_panel
+
     def main(self):
 
         steps = self.iter_count - 3  # var for making prediction every N iteration step
@@ -207,14 +219,7 @@ class Paint:
 
                 steps = 0
 
-                matrix = pygame.transform.scale(self.paint_surface, (28, 28))  # scale paint surface: 800x800 -> 28x28
-                matrix = pygame.surfarray.array2d(matrix)   # make matrix from surface
-
-                matrix = np.where(matrix < -1, 0, np.abs(matrix / 16777215)).T  # process matrix
-
-                # update model_result
-                self.model_result = self.model.predict(matrix)  # make prediction and get result
-                self.model_result += 0.01  # +0.01 for info_panel
+                self.update_result()
 
                 if not self.init_passed_flag1:
                     self.init_passed_flag1 = True  # flag to stop "I'm loading" animation
@@ -234,6 +239,9 @@ class Paint:
             self.update_screen()
             pygame.display.update()
 
+        sys.exit()
+
 
 if __name__ == "__main__":
-    Paint().main()
+    P = Paint()
+    P.main()
