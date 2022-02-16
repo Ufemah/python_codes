@@ -1,6 +1,5 @@
 import pygame
 import sys
-import threading
 import numpy as np
 
 from settings import *
