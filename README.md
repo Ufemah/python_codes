@@ -2,5 +2,5 @@
 Trying to do some things
 
 
-Handwritten digits recognizer demo
+Handwritten digits recognizer demo <br>
 ![](demo.gif)
