@@ -6,7 +6,7 @@ import socket
 
 
 HOST = 'localhost'
-PORT = 20000
+PORT = 20002
 folder_icon = 'folder: '
 
 
